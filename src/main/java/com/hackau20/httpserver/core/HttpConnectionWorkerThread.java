@@ -3,13 +3,13 @@ package com.hackau20.httpserver.core;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.Socket;
 
 public class HttpConnectionWorkerThread extends Thread {
 
+    String clientSentence;
+    String capitalizedSentence;
     private final  static Logger LOGGER = LoggerFactory.getLogger(HttpConnectionWorkerThread.class);
     private  Socket socket;
 
@@ -21,14 +21,27 @@ public class HttpConnectionWorkerThread extends Thread {
     public void run() {
 
 
-        InputStream inputStream=null;
-        OutputStream outputStream=null;
+        DataInputStream inputStream=null;
+        DataOutputStream outputStream=null;
         try {
 
 
-            inputStream = socket.getInputStream();
-            outputStream = socket.getOutputStream();
+          //  inputStream = new DataInputStream(socket.getInputStream());
+         //   outputStream =  new DataOutputStream(socket.getOutputStream());
 
+           // System.out.println("Pre read");
+            BufferedReader inFromClient =
+                    new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+            clientSentence = inFromClient.readLine();
+            System.out.println("Received: " + clientSentence);
+            System.out.println("Proc....");
+            OutputStream outToClient = socket.getOutputStream();
+            PrintWriter writer = new PrintWriter(outToClient, true);
+            writer.println("This is a message sent to the server");
+
+//            capitalizedSentence = clientSentence.toUpperCase() + 'n';
+//            outToClient.writeBytes(capitalizedSentence);
 //            int _byte;
 //
 //            while( (_byte = inputStream.read()) >= 0)
@@ -43,13 +56,13 @@ public class HttpConnectionWorkerThread extends Thread {
             System.out.println("Connected ");
             // writing
 
-            String anstest  ="{t1:123, t2:123} ";
-            final String CRLF = "\n\r";
-
-
-            String response = "HTTP/1.1 200 OK" + CRLF +
-                    "Content-Length: " + anstest.getBytes().length + CRLF + CRLF + anstest + CRLF + CRLF; // TODO
-            outputStream.write(anstest.getBytes());
+//            String anstest  ="{t1:123, t2:123} ";
+//            final String CRLF = "\n\r";
+//
+//
+//            String response = "HTTP/1.1 200 OK" + CRLF +
+//                    "Content-Length: " + anstest.getBytes().length + CRLF + CRLF + anstest + CRLF + CRLF; // TODO
+//            outputStream.write(anstest.getBytes());
 
 
 
