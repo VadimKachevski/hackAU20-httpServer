@@ -1,10 +1,15 @@
 package com.hackau20.httpserver.core;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hackau20.httpserver.dbClass.users;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayList;
 
 public class HttpConnectionWorkerThread extends Thread {
 
@@ -25,44 +30,27 @@ public class HttpConnectionWorkerThread extends Thread {
         DataOutputStream outputStream=null;
         try {
 
-
-          //  inputStream = new DataInputStream(socket.getInputStream());
-         //   outputStream =  new DataOutputStream(socket.getOutputStream());
-
-           // System.out.println("Pre read");
-            BufferedReader inFromClient =
-                    new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
-            clientSentence = inFromClient.readLine();
-            System.out.println("Received: " + clientSentence);
-            System.out.println("Proc....");
-            OutputStream outToClient = socket.getOutputStream();
-            PrintWriter writer = new PrintWriter(outToClient, true);
-            writer.println("This is a message sent to the server");
-
-//            capitalizedSentence = clientSentence.toUpperCase() + 'n';
-//            outToClient.writeBytes(capitalizedSentence);
-//            int _byte;
-//
-//            while( (_byte = inputStream.read()) >= 0)
-//            {
-//                System.out.print((char)_byte);
+            DataInputStream inFromClient =
+                    new DataInputStream(socket.getInputStream());
+            DataOutputStream outToClient =
+                    new DataOutputStream(socket.getOutputStream());
+           String clientWord = inFromClient.readUTF();
+            System.out.println(clientWord);
+           // String toClinet = "PLEASE WORK";
+            ArrayList<users> usersAL = dbConnector.getTest();
+//            for (users us :
+//                    usersAL) {
+//                outToClient.write(us.Json().getBytes());
 //            }
-
-
-
-            LOGGER.info("Good Connected");
-            // reading
-            System.out.println("Connected ");
-            // writing
-
-//            String anstest  ="{t1:123, t2:123} ";
-//            final String CRLF = "\n\r";
-//
-//
-//            String response = "HTTP/1.1 200 OK" + CRLF +
-//                    "Content-Length: " + anstest.getBytes().length + CRLF + CRLF + anstest + CRLF + CRLF; // TODO
-//            outputStream.write(anstest.getBytes());
+            ObjectMapper mapper = new ObjectMapper();
+            try {
+                outToClient.write(mapper.writeValueAsString(usersAL).getBytes());
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+           // outToClient.write(toClinet.getBytes());
 
 
 
